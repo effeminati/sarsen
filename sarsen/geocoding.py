@@ -17,7 +17,7 @@ def secant_method(
     ufunc: Callable[[TimedeltaArrayLike], Tuple[FloatArrayLike, FloatArrayLike]],
     t_prev: TimedeltaArrayLike,
     t_curr: TimedeltaArrayLike,
-    diff_ufunc: float = 1.0,
+    diff_ufunc: float = 1.0e-3,
     diff_t: np.timedelta64 = np.timedelta64(0, "ns"),
 ) -> Tuple[TimedeltaArrayLike, TimedeltaArrayLike, FloatArrayLike, Any]:
     """Return the root of ufunc calculated using the secant method."""
@@ -72,7 +72,7 @@ def backward_geocode(
     velocity_ecef: xr.DataArray,
     azimuth_time: Optional[xr.DataArray] = None,
     dim: str = "axis",
-    diff_ufunc: float = 1.0,
+    diff_ufunc: float = 1.0e-3
 ) -> xr.Dataset:
     direction_ecef = (
         velocity_ecef / xr.dot(velocity_ecef, velocity_ecef, dims=dim) ** 0.5

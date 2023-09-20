@@ -18,15 +18,20 @@ def simulate_acquisition(
     dem_ecef: xr.DataArray,
     position_ecef: xr.DataArray,
     include_variables: Container[str] = (),
+    azimuth_time: Optional[xr.DataArray] = None,
+    deg: Optional[str] = 5,
+    poly_type: Optional[str] = 'polynomial',
 ) -> xr.Dataset:
     """Compute the image coordinates of the DEM given the satellite orbit."""
 
-    orbit_interpolator = orbit.OrbitPolyfitIterpolator.from_position(position_ecef)
+    orbit_interpolator = orbit.OrbitPolyfitIterpolator.from_position(position_ecef, poly_type=poly_type, deg=deg)
     position_ecef = orbit_interpolator.position()
     velocity_ecef = orbit_interpolator.velocity()
 
-    acquisition = geocoding.backward_geocode(dem_ecef, position_ecef, velocity_ecef)
-
+    # print(f'position_ecef: {position_ecef}')
+    acquisition = geocoding.backward_geocode(dem_ecef, position_ecef, velocity_ecef, 
+                                             azimuth_time=azimuth_time)
+    # print(f'dem_distance: {acquisition.dem_distance.values}')
     slant_range = (acquisition.dem_distance**2).sum(dim="axis") ** 0.5
     slant_range_time = 2.0 / SPEED_OF_LIGHT * slant_range
 
